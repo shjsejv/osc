@@ -1,0 +1,50 @@
+#include<iostream>
+using namespace std;
+
+int main()
+{ //bitv
+	char ans;
+	int n,start;
+	int vect[10];
+	int i,j,blocks;
+	for(i=0;i<10;i++)
+		vect[i]=0;
+X:	
+	cout<<"initial bit vector\n < ";
+	for(i=0;i<10;i++)
+		cout<<vect[i];
+	cout<<" >";
+	
+	cout<<"enter the number of blocks you want to allocate"<<endl;
+	cin>>n;
+	
+	cout<<"enter the starting block\n";
+	cin>>start;
+	
+	for(i=start;i<n+start;i++)
+	{
+		if(vect[i]==0)
+		{
+			cout<<"allocating block "<<i+1<<endl;
+			vect[i]=1;
+		}
+		else
+		{
+			cout<<"block "<<i<<" already allocated. sequential allocation stopped\n";
+			break;
+		}
+	}
+	
+	cout<<"bit vector\n < ";
+	for(i=0;i<10;i++)
+		cout<<vect[i];
+	cout<<" >";
+	
+	cout<<"do you want to continue?[y/n]";
+	cin>>ans;
+	
+	if(ans=='y' || ans==	'Y')
+		goto X;
+		
+	return 0;
+}	
