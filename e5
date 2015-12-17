@@ -1,0 +1,84 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+int mutex=1;
+int x=0,full=0,empty=5,a[5];
+void display()
+{ //procon
+	int i;
+	printf("\nBUFFER IS: ");
+	if(empty==5)
+		printf("\n\n\tStack is EMPTY\n");
+	else
+		for(i=0;i<5;i++)
+			printf("\t%d",a[i]);
+
+	printf("\n");
+}
+int wait(int s)
+{
+    return --s;
+}
+int signal(int s)
+{
+    return ++s;
+}
+void producer()
+{
+    int item;
+    mutex=wait(mutex);
+    full++;
+    empty--;
+    printf("enter itemno: ");
+    scanf("%d",&item);
+    a[x]=item;
+    printf("\nproducer produces the item %d",a[x]);
+    x++;
+    mutex=signal(mutex);
+}
+
+void consumer()
+{
+    mutex=wait(mutex);
+    full--;
+    empty++;
+    x--;
+    printf("\nconsumer consumed the item %d",a[x]);
+    a[x]=0;
+    mutex=signal(mutex);
+}
+int main()
+{
+    int c;
+	while(1)
+	{
+		printf("\n\t\tCHOICES\n\t\t~~~~~~~\n\t1.Producer\n\t2.Consumer\n\t3.Exit\nEnter your choice : ");
+		scanf("%d",&c);
+		switch(c)
+		{
+			case 1:
+				if(mutex==1 && full!=5)
+				{producer();
+				 display();
+				}
+				else
+                    printf("\nbuffer full producer sleeping");
+
+                break;
+
+
+			case 2:
+                if(mutex==1 && empty!=5)
+                {consumer(); display();}
+                else
+                printf("\nbuffer empty consumer sleeping");
+                break;
+
+			case 3:
+				exit(0);
+			default:
+				printf("\n\n\tIt is Wrong choice,Please enter correct choice!............\n\n");
+		}
+	}
+}
+
