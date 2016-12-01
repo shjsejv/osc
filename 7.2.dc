@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+int main(void);
+int main()
+{
+int sockfd;
+int sendbuff;
+socklen_t optlen;
+
+optlen = sizeof(sendbuff);
+
+/* Create the socket */
+if((sockfd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+perror("socket()");
+exit(EXIT_FAILURE);
+}
+
+/* Check the status for the keepalive option */
+if(getsockopt(sockfd, SOL_SOCKET, SO_KEEPALIVE, &sendbuff, &optlen) < 0) {
+perror("getsockopt()");
+close(sockfd);
+exit(EXIT_FAILURE);
+}
+
+printf("SO_KEEPALIVE is %s\n", (sendbuff ? "ON" : "OFF"));
+/* Set the option active */
+sendbuff = 1;
+optlen = sizeof(sendbuff);
+if(setsockopt(sockfd, SOL_SOCKET, SO_KEEPALIVE, &sendbuff, optlen) < 0) {
+perror("setsockopt()");
+close(sockfd);
+exit(EXIT_FAILURE);
+}
+
+printf("SO_KEEPALIVE set on socket\n");
+/* Check the status again */
+if(getsockopt(sockfd, SOL_SOCKET, SO_KEEPALIVE, &sendbuff, &optlen) < 0) {
+perror("getsockopt()");
+close(sockfd);
+exit(EXIT_FAILURE);
+}
+
+printf("SO_KEEPALIVE is %s\n", (sendbuff ? "ON" : "OFF"));
+close(sockfd);
+exit(EXIT_SUCCESS);
+}
