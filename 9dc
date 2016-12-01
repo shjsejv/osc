@@ -1,0 +1,194 @@
+#include<stdio.h>
+
+void init();
+int totalprocess,cordinator,in;
+int findMax();
+void ring(int processNumber);
+void crash(int processNumber);
+void recover(int processNumber);
+
+typedef struct process{
+int processID;
+int crashed;
+}process;
+process processList[10];
+
+int main()
+{
+int temp;
+int option;
+init();
+do{
+printf("\nPlease option Below");
+printf("\n1.Crash Process");
+printf("\n2.Recover Process");
+printf("\n3.exit");
+printf("\noption Please: ");
+scanf("%d",&option);
+switch(option)
+{
+case 1: printf("Enter process you want to crash: ");
+scanf("%d",&temp);
+crash(temp);
+break;
+case 2: printf("Enter process you want to recover: ");
+scanf("%d",&temp);
+recover(temp);
+break;
+case 3: //exit()
+break;
+default:printf("incorrect option");
+}
+}while(option!=3);
+return 0;
+}
+
+void init()
+{
+int i;
+printf("Enter number of process to want to created: ");
+scanf("%d",&totalprocess);
+for(i=0;i<totalprocess;i++)
+{
+printf("Enter process ID for process-%d: ",i);
+scanf("%d",&processList[i].processID);
+}
+printf("\nenter the initialiser");
+scanf("%d",&in);
+ring(in);
+}
+
+void ring(int processNumber)
+{
+int uncrashed[10],count=-1;
+int i;
+for(i=0;i<totalprocess;i++)
+{
+if(processList[i].crashed==0)
+{
+count++;
+uncrashed[count]=i;
+}
+}
+if(count==0 && uncrashed[0]==processNumber)
+{
+printf("Only one process left so co-ordinator is %d",processNumber);
+cordinator=processNumber;
+return;
+}else if(count ==0 )
+{
+printf("Sorry only process %d is active so co-ordinator is %d",uncrashed[0],uncrashed[0]);
+cordinator=uncrashed[0];
+return;
+}
+else if(count <0)
+{
+printf("Sorry no Process is active");
+cordinator=-1;
+}
+else
+{
+int j=0,k;
+while(uncrashed[j]!=processNumber)
+{
+j++;
+}
+while(j<count)
+{
+k=j+1;
+printf("\nMessage sent to process %d form process %d",uncrashed[j],uncrashed[k]);
+j++;
+}
+if(j==count)
+{
+k=0;
+printf("\nMessage sent to process %d form process %d",uncrashed[j],uncrashed[k]);
+}
+int l=0;
+while(uncrashed[l]!=processNumber)
+{
+l++;
+}
+j=0;
+while(j<l)
+{
+k=j+1;
+printf("\nMessage sent to process %d form process %d",uncrashed[j],uncrashed[k]);
+j++;
+}
+cordinator=findMax();
+printf("nNew Coordinator is %d",cordinator);
+return;
+}
+}
+
+void recover(int processNumber)
+{
+int i;
+if(processList[processNumber].crashed==0)
+{
+printf("Sorry, this process is already active");
+}
+else
+{
+processList[processNumber].crashed=0;
+for(i=0;i<totalprocess;i++)
+{
+if(processList[i].crashed==0)
+{
+ring(processNumber);
+break;
+}
+}
+if(i==totalprocess)
+{
+printf("New Cordinator is: %d",processNumber);
+cordinator=processNumber;
+}
+}
+}
+
+void crash(int processNumber)
+{
+int i;
+if(cordinator==processNumber)
+{
+processList[processNumber].crashed=1;
+for(i=0;i<totalprocess;i++)
+{
+if(processList[i].crashed==0)
+{
+printf("process %d is initiating selection algorithm",i);
+ring(i);
+break;
+}
+}
+if(i==totalprocess)
+{
+printf("No Process Left");
+cordinator=-1;
+}
+}
+else
+{
+processList[processNumber].crashed=1;
+printf("process %d has crashed",processNumber);
+}
+}
+
+int findMax()
+{
+int i,max=0,index=-1;
+
+for(i=0;i<totalprocess;i++)
+{
+
+if(processList[i].crashed==0&&processList[i].processID>max)
+{
+
+max=processList[i].processID;
+index=i ;
+}
+}
+return index;
+}
